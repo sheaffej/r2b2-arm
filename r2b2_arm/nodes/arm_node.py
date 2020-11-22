@@ -2,8 +2,8 @@
 # http://docs.ros.org/en/noetic/api/actionlib/html/classactionlib_1_1SimpleActionServer.html
 
 import rospy
-import actionlib
-from control_msgs.msg import FollowJointTrajectoryAction
+# import actionlib
+# from control_msgs.msg import FollowJointTrajectoryAction
 
 from r2b2_arm.controller import R2B2ArmController
 

@@ -2,6 +2,7 @@
 # http://wiki.ros.org/pr2_controllers/Tutorials/Moving%20the%20arm%20using%20the%20Joint%20Trajectory%20Action#The_trajectory_message
 
 import rospy
+import time
 
 import actionlib
 from control_msgs.msg import (
@@ -9,6 +10,7 @@ from control_msgs.msg import (
     # FollowJointTrajectoryResult, FollowJointTrajectoryFeedback
 )
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+from actionlib_msgs.msg import GoalStatus
 
 
 def action_client():
@@ -52,7 +54,6 @@ def action_client():
         points=points
     )
 
-    # Creates a goal to send to the action server.
     goal = FollowJointTrajectoryGoal(
         trajectory=trajectory,
         path_tolerance=None,
@@ -62,28 +63,36 @@ def action_client():
 
     goal.trajectory.header.stamp = rospy.Time.now() + rospy.Duration(1.0)
 
-    # Sends the goal to the action server.
     rospy.loginfo("Sending goal")
     client.send_goal(goal)
     rospy.loginfo("Sent goal")
 
-    # Waits for the server to finish performing the action.
-    while not client.wait_for_result(timeout=rospy.Duration(1.0)):
-        rospy.loginfo("Waiting for result")
-    rospy.loginfo("Results are ready")
+    timeout_secs = 100.
+    start_time = time.monotonic()
+    while time.monotonic() < (start_time + timeout_secs):
+        print(client.get_state())
 
-    # Prints out the result of executing the action
-    return client.get_result()
+        # http://docs.ros.org/en/diamondback/api/actionlib_msgs/html/msg/GoalStatus.html
+        if client.get_state() <= GoalStatus.ACTIVE:
+            print("Waiting for results")
+            time.sleep(1.0)
+        else:
+            break
+
+    results = None
+    if time.monotonic() < (start_time + timeout_secs):
+        client.wait_for_result(timeout=rospy.Duration(5.))
+        results = client.get_result()
+    else:
+        client.cancel_goal()
+    return results
 
 
 if __name__ == '__main__':
     try:
-        # Initializes a rospy node so that the SimpleActionClient can
-        # publish and subscribe over ROS.
-        rospy.init_node('test_action_client')
+        rospy.init_node('test_action_client', anonymous=True)
         result = action_client()
-        # print("Result:", ', '.join([str(n) for n in result.sequence]))
-        print(f"Results: {result}")
+        print(f"Results: \n{result}")
 
     except rospy.ROSInterruptException:
         rospy.logerr("program interrupted before completion")
