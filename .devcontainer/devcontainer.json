@@ -1,0 +1,33 @@
+{
+	"name": "R2B2 Arm",
+	"build": {
+		"dockerfile": "../Dockerfile",
+		"context": "..",
+		"image": "r2b2-arm",
+	},
+	"runArgs": [
+		"--name", "r2b2-arm-vscode"
+	],
+	"containerEnv": {
+	},
+
+	// Set *default* container specific settings.json values on container create.
+	"settings": { 
+		"terminal.integrated.shell.linux": "/bin/bash",
+		"python.pythonPath": "/usr/bin/python3",
+		"python.autoComplete.extraPaths": [
+			"/ros/devel/lib/python3/dist-packages",
+			"/opt/ros/noetic/lib/python3/dist-packages",
+			"/workspaces/r2b2-arm/r2b2_arm/src"
+		],		
+		"python.linting.enabled": true,
+		"python.linting.pylintEnabled": true,
+	},
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"ms-python.python",
+		"ms-iot.vscode-ros"
+	]
+
+}
