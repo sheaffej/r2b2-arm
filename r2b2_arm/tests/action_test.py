@@ -3,6 +3,7 @@
 
 import rospy
 import time
+from math import radians
 
 import actionlib
 from control_msgs.msg import (
@@ -24,27 +25,29 @@ def action_client():
     joint_names = [
         "base_rot_j0", "arm_base_j1", "arm_mid_j2", "arm_rot_j3", "wrist_rot_j4"
     ]
+    secs_per_waypoint = 1.
+
     points = [
         # Start [0., 120., 120., -90., 0. ]
         JointTrajectoryPoint(  # Initial lift from stow position
             positions=[0., 90., 90., -90., 0.],
-            time_from_start=rospy.Duration(1.)
+            time_from_start=rospy.Duration(secs_per_waypoint)
         ),
         JointTrajectoryPoint(  # Project forward
             positions=[0., 0., 45., 0., 0.],
-            time_from_start=rospy.Duration(1.)
+            time_from_start=rospy.Duration(secs_per_waypoint * 2)
         ),
         JointTrajectoryPoint(  # Project forward further
             positions=[0., -45., 15., 0., 0.],
-            time_from_start=rospy.Duration(1.)
+            time_from_start=rospy.Duration(secs_per_waypoint * 3)
         ),
         JointTrajectoryPoint(  # Adjust to left a little
             positions=[-30., -45., 15., 0., 0.],
-            time_from_start=rospy.Duration(1.)
+            time_from_start=rospy.Duration(secs_per_waypoint * 4)
         ),
         JointTrajectoryPoint(  # Bend down
             positions=[-30., -45., 15., 0., -45.],
-            time_from_start=rospy.Duration(1.)
+            time_from_start=rospy.Duration(secs_per_waypoint * 5)
         ),
     ]
 

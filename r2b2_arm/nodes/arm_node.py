@@ -34,7 +34,15 @@ if __name__ == '__main__':
     node_name = rospy.get_name()
     rospy.loginfo("Node is starting")
 
-    controller = R2B2ArmController()
+    initial_joint_positions = [0., 120., 120., -90., 0.]
+    default_path_tolerance = [0.1] * len(initial_joint_positions)
+    loop_hz = 10
+
+    controller = R2B2ArmController(
+        initial_joint_positions=initial_joint_positions,
+        path_tolerance=default_path_tolerance,
+        loop_hz=loop_hz
+    )
     rospy.loginfo("Controller created")
 
     rospy.spin()
